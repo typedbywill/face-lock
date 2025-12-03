@@ -7,7 +7,7 @@
     "height": 480
   },
   "monitor": {
-    "delaySeconds": 5,
+    "delaySeconds": 10,
     "threshold": 0.7,
     "checkInterval": 1000
   }

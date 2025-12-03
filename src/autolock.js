@@ -16,7 +16,7 @@ async function main() {
     return;
   }
 
-  const baseDescriptor = store.load();
+  const baseDescriptor = store.loadAll();
 
   const modelLoader = new ModelLoader(config.modelPath);
   await modelLoader.loadOnce();

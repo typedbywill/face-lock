@@ -34,15 +34,23 @@ export class FaceMonitor {
       return;
     }
 
-    const recognized = await this.recognizer.recognize(buf);
+    const result = await this.recognizer.recognize(buf);
 
-    if (recognized) {
+    if (result.recognized) {
+      debug(`Reconhecido: ${result.user.name} (dist=${result.distance})`);
       this.lastSeen = Date.now();
+    } else {
+      debug(`Não reconhecido (melhor dist=${result.distance})`);
     }
 
-    if (Date.now() - this.lastSeen > this.config.monitor.delaySeconds * 1000) {
+    const elapsed = Date.now() - this.lastSeen;
+    const limit = this.config.monitor.delaySeconds * 1000;
+
+    if (elapsed > limit) {
       console.log("Usuário ausente — bloqueando…");
       await this.session.lock();
+
+      // evita loop de bloqueio contínuo
       this.lastSeen = Date.now() + 2000;
     }
   }
