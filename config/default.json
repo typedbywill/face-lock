@@ -1,6 +1,6 @@
 {
   "modelPath": "./models",
-  "descriptorFile": "./face_descriptor.json",
+  "descriptorFile": "./config/face_descriptor.json",
   "camera": {
     "width": 640,
     "height": 480

@@ -1,4 +1,4 @@
-import config from "config";
+import config from "../config/default.json" with { type: "json" };
 import { createCamera } from "./utils/camera.js";
 import { loadModels, getFaceDescriptor, euclidean } from "./utils/face.js";
 import { loadDescriptor, fileExists } from "./utils/file.js";
@@ -26,7 +26,7 @@ async function main() {
       return;
     }
 
-    camera.capture("tmp", async (err, buffer) => {
+    camera.capture("cache/tmp", async (err, buffer) => {
       if (err) return;
 
       const det = await getFaceDescriptor(buffer);

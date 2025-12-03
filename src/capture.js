@@ -1,5 +1,5 @@
 import fs from "fs";
-import config from "config";
+import config from "../config/default.json" with { type: "json" };
 import { createCamera } from "./utils/camera.js";
 import { loadModels, getFaceDescriptor } from "./utils/face.js";
 import { saveDescriptor } from "./utils/file.js";
@@ -13,7 +13,7 @@ async function main() {
   console.log("Posicione-se em frente à câmera...");
   await new Promise(r => setTimeout(r, 2000));
 
-  camera.capture("tmp", async (err, buffer) => {
+  camera.capture("cache/user", async (err, buffer) => {
     if (err) return console.error("Erro ao capturar:", err);
 
     const descriptor = await getFaceDescriptor(buffer);

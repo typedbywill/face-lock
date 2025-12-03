@@ -1,2 +1,4 @@
 node_modules
 models
+config/face_descriptor.json
+cache/*
