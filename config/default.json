@@ -1,14 +1,14 @@
 {
   "modelPath": "./models",
   "descriptorFile": "./config/face_descriptor.json",
-  "debugMode": false,
+  "debugMode": true,
   "camera": {
     "width": 640,
     "height": 480
   },
   "monitor": {
-    "delaySeconds": 5,
-    "threshold": 0.6,
+    "delaySeconds": 20,
+    "threshold": 0.7,
     "checkInterval": 500
   }
 }
