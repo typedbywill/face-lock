@@ -1,0 +1,13 @@
+{
+  "modelPath": "./models",
+  "descriptorFile": "./face_descriptor.json",
+  "camera": {
+    "width": 640,
+    "height": 480
+  },
+  "monitor": {
+    "delaySeconds": 5,
+    "threshold": 0.6,
+    "checkInterval": 500
+  }
+}
