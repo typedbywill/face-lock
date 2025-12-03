@@ -1,5 +1,5 @@
 // services/DescriptorStore.js
-import { loadDescriptor, saveDescriptor, fileExists } from "../utils/file.js";
+import fs from "fs";
 
 export class DescriptorStore {
   constructor(filePath) {
@@ -7,14 +7,43 @@ export class DescriptorStore {
   }
 
   exists() {
-    return fileExists(this.filePath);
+    return fs.existsSync(this.filePath);
   }
 
-  load() {
-    return loadDescriptor(this.filePath);
+  loadAll() {
+    if (!this.exists()) return [];
+    return JSON.parse(fs.readFileSync(this.filePath, "utf8"));
   }
 
-  save(desc) {
-    return saveDescriptor(this.filePath, Array.from(desc));
+  saveAll(list) {
+    fs.writeFileSync(this.filePath, JSON.stringify(list, null, 2));
+  }
+
+  addUser(user) {
+    const all = this.loadAll();
+    all.push(user);
+    this.saveAll(all);
+  }
+
+  updateUser(id, descriptor) {
+    const all = this.loadAll();
+    const user = all.find(u => u.id === id);
+    if (!user) return false;
+
+    user.descriptor = descriptor;
+    user.updated = new Date().toISOString();
+
+    this.saveAll(all);
+    return true;
+  }
+
+  removeUser(id) {
+    const all = this.loadAll();
+    const filtered = all.filter(u => u.id !== id);
+    this.saveAll(filtered);
+  }
+
+  findUserByName(name) {
+    return this.loadAll().find(u => u.name.toLowerCase() === name.toLowerCase());
   }
 }

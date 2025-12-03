@@ -3,7 +3,12 @@
   "type": "module",
   "scripts": {
     "capture": "node src/capture.js",
-    "autolock": "node src/autolock.js"
+    "autolock": "node src/autolock.js",
+    "face:add": "node src/cli/addFace.js",
+    "face:update": "node src/cli/updateFace.js",
+    "face:remove": "node src/cli/removeFace.js",
+    "face:list": "node src/cli/listFaces.js",
+    "face:clear": "node src/cli/clearAll.js"
   },
   "dependencies": {
     "@mediapipe/tasks-vision": "^0.10.22-rc.20250304",
