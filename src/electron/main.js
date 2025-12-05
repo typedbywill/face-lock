@@ -95,12 +95,13 @@ function createWindow() {
             preload: path.join(__dirname, 'preload.js'),
             nodeIntegration: false,
             contextIsolation: true,
+            devTools: true
         },
     });
 
     if (isDev) {
         mainWindow.loadURL('http://localhost:5173');
-        // mainWindow.webContents.openDevTools(); 
+        mainWindow.webContents.openDevTools();
         mainWindow.setMenu(null);
     } else {
         mainWindow.loadFile(path.join(__dirname, '../../dist/index.html'));

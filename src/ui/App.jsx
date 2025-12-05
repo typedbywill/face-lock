@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Camera, Shield, ShieldAlert, UserPlus, Trash2, ArrowLeft, Loader2, Settings, Save, FileText, RefreshCw } from 'lucide-react';
+import Logs from './components/Logs';
 
 function App() {
     const [isRunning, setIsRunning] = useState(false);
@@ -418,8 +419,25 @@ function App() {
         </div>
     );
 
+    const renderLogs = () => (
+        <div className="h-screen flex flex-col font-sans bg-neutral-900">
+            <header className="p-8 pb-0">
+                <button
+                    onClick={() => setView('dashboard')}
+                    className="text-neutral-500 hover:text-neutral-200 flex items-center gap-2 mb-6 text-sm font-medium transition-colors"
+                >
+                    <ArrowLeft className="w-4 h-4" />
+                    Voltar
+                </button>
+            </header>
+            <div className="flex-1 overflow-hidden">
+                <Logs />
+            </div>
+        </div>
+    );
+
     return (
-        <div className="min-h-screen bg-neutral-900 selection:bg-neutral-700 selection:text-neutral-200">
+        <div className="min-h-screen bg-neutral-900 selection:bg-neutral-700 selection:text-neutral-200 overflow-auto">
             {view === 'dashboard' && renderDashboard()}
             {view === 'add' && renderAddFace()}
             {view === 'settings' && renderSettings()}
