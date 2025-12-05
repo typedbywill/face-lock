@@ -112,7 +112,7 @@ Detectado automaticamente no modo "auto".
 Comando nativo: rundll32.exe user32.dll,LockWorkStation
 
 ### macOS
-Comando nativo: AppleScript para bloquear/ativar screensaver
+Comando nativo: AppleScript ou pmset
 
 ### Custom
 Permite usar qualquer comando:
@@ -188,10 +188,11 @@ Nenhuma imagem é enviada para a internet.
 
 # 🧩 Roadmap
 
+- [ ] Suporte para desbloqueio automático  
 - [ ] Interface gráfica (Electron)  
-- [ ] Distribuição via npx face-lock
-- [ ] Suporte a múltiplos usuários
-- [ ] Otimizações de performance
+- [ ] Distribuição via npx face-lock  
+- [ ] Suporte a múltiplos usuários  
+- [ ] Otimizações de performance  
 
 -------------------------------------------------------------------------------
 
@@ -202,6 +203,16 @@ Nenhuma imagem é enviada para a internet.
 3. Commit  
 4. Push  
 5. PR  
+
+-------------------------------------------------------------------------------
+
+# ❤️ Doações
+
+Se você quiser apoiar o desenvolvimento contínuo do Face-Lock, você pode contribuir via PIX:
+
+#### [Doar 5 reais para typedbywill](https://nubank.com.br/cobrar/o9pkx/65e4f65a-e7a0-40fd-9ab8-16e7efe24141)
+
+Toda ajuda é bem-vinda e incentiva a evolução do projeto! 🙌
 
 -------------------------------------------------------------------------------
 
