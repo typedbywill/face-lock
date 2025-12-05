@@ -1,7 +1,7 @@
 {
   "modelPath": "./models",
   "descriptorFile": "./config/face_descriptor.json",
-  "debugMode": false,
+  "debugMode": true,
   "lock": {
     "mode": "auto",
     "lockCommand": null

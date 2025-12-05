@@ -7,15 +7,34 @@
     "face:update": "node src/cli/updateFace.js",
     "face:remove": "node src/cli/removeFace.js",
     "face:list": "node src/cli/listFaces.js",
-    "face:clear": "node src/cli/clearAll.js"
+    "face:clear": "node src/cli/clearAll.js",
+    "dev": "concurrently \"vite\" \"wait-on tcp:5173 && cross-env NODE_ENV=development electron src/electron/main.js\"",
+    "build": "vite build",
+    "rebuild": "electron-rebuild"
   },
   "dependencies": {
     "@mediapipe/tasks-vision": "^0.10.22-rc.20250304",
+    "@tailwindcss/postcss": "^4.1.17",
     "@tensorflow/tfjs-node": "^4.22.0",
     "@vladmandic/face-api": "^1.7.15",
     "canvas": "^3.2.0",
     "face-api.js": "^0.22.2",
+    "lucide-react": "^0.556.0",
     "mediapipe": "^0.0.1-security",
-    "node-webcam": "^0.8.2"
+    "node-webcam": "^0.8.2",
+    "react": "^19.2.1",
+    "react-dom": "^19.2.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^5.1.1",
+    "autoprefixer": "^10.4.22",
+    "concurrently": "^9.2.1",
+    "cross-env": "^10.1.0",
+    "electron": "^39.2.6",
+    "electron-rebuild": "^3.2.9",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.17",
+    "vite": "^7.2.6",
+    "wait-on": "^9.0.3"
   }
 }
