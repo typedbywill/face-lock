@@ -2,6 +2,10 @@
   "modelPath": "./models",
   "descriptorFile": "./config/face_descriptor.json",
   "debugMode": false,
+  "lock": {
+    "mode": "auto",
+    "lockCommand": null
+  },
   "camera": {
     "width": 640,
     "height": 480

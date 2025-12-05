@@ -2,7 +2,6 @@
   "name": "face-lock",
   "type": "module",
   "scripts": {
-    "capture": "node src/capture.js",
     "autolock": "node src/autolock.js",
     "face:add": "node src/cli/addFace.js",
     "face:update": "node src/cli/updateFace.js",
