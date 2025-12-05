@@ -1,12 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Camera, Shield, ShieldAlert, UserPlus, Trash2, ArrowLeft, Loader2 } from 'lucide-react';
+import { Camera, Shield, ShieldAlert, UserPlus, Trash2, ArrowLeft, Loader2, Settings, Save, FileText, RefreshCw } from 'lucide-react';
 
 function App() {
     const [isRunning, setIsRunning] = useState(false);
     const [faces, setFaces] = useState([]);
-    const [view, setView] = useState('dashboard'); // 'dashboard' | 'add'
+    const [view, setView] = useState('dashboard'); // 'dashboard' | 'add' | 'settings' | 'logs'
     const [newFaceName, setNewFaceName] = useState('');
     const [isCapturing, setIsCapturing] = useState(false);
+    const [logs, setLogs] = useState([]); // Logs state
+
+    // Settings State
+    const [settings, setSettings] = useState({
+        monitor: { delaySeconds: 5, threshold: 0.6 },
+        camera: { width: 640, height: 480 }
+    });
+    const [isSavingSettings, setIsSavingSettings] = useState(false);
 
     const videoRef = useRef(null);
     const canvasRef = useRef(null);
@@ -28,6 +36,22 @@ function App() {
         setFaces(list);
     };
 
+    const loadSettings = async () => {
+        const config = await window.api.getSettings();
+        if (config) {
+            // Deep copy only what we need to edit to avoid overriding unexpected stuff
+            setSettings({
+                monitor: { ...config.monitor },
+                camera: { ...config.camera }
+            });
+        }
+    };
+
+    const loadLogs = async () => {
+        const history = await window.api.getLogs();
+        setLogs(history);
+    };
+
     const toggleMonitor = async () => {
         if (isRunning) {
             await window.api.stopMonitor();
@@ -44,8 +68,30 @@ function App() {
         }
     };
 
-    // --- Add Face Logic ---
+    const handleSaveSettings = async () => {
+        setIsSavingSettings(true);
+        const result = await window.api.saveSettings(settings);
+        setIsSavingSettings(false);
 
+        if (result.success) {
+            alert("Configurações salvas!");
+            setView('dashboard');
+        } else {
+            alert("Erro ao salvar: " + result.error);
+        }
+    };
+
+    const handleOpenSettings = () => {
+        loadSettings();
+        setView('settings');
+    };
+
+    const handleOpenLogs = () => {
+        loadLogs();
+        setView('logs');
+    };
+
+    // --- Add Face Logic ---
     const startCamera = async () => {
         try {
             if (isRunning) {
@@ -120,21 +166,37 @@ function App() {
                         Auto Lock
                     </h1>
                 </div>
-                <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium border ${isRunning
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={handleOpenLogs}
+                        className="text-neutral-500 hover:text-neutral-100 transition-colors bg-neutral-800/50 p-2 rounded-lg hover:bg-neutral-800"
+                        title="Logs de Bloqueio"
+                    >
+                        <FileText className="w-5 h-5" />
+                    </button>
+                    <button
+                        onClick={handleOpenSettings}
+                        className="text-neutral-500 hover:text-neutral-100 transition-colors bg-neutral-800/50 p-2 rounded-lg hover:bg-neutral-800"
+                        title="Configurações"
+                    >
+                        <Settings className="w-5 h-5" />
+                    </button>
+                    <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium border ${isRunning
                         ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
                         : 'bg-neutral-800 border-neutral-700 text-neutral-400'
-                    }`}>
-                    {isRunning ? (
-                        <>
-                            <span className="relative flex h-2 w-2">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                            </span>
-                            Monitorando
-                        </>
-                    ) : (
-                        'Pausado'
-                    )}
+                        }`}>
+                        {isRunning ? (
+                            <>
+                                <span className="relative flex h-2 w-2">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                                </span>
+                                Monitorando
+                            </>
+                        ) : (
+                            'Pausado'
+                        )}
+                    </div>
                 </div>
             </header>
 
@@ -148,8 +210,8 @@ function App() {
                     <button
                         onClick={toggleMonitor}
                         className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${isRunning
-                                ? 'bg-neutral-700 text-neutral-300 hover:bg-neutral-600'
-                                : 'bg-neutral-100 text-neutral-900 hover:bg-white'
+                            ? 'bg-neutral-700 text-neutral-300 hover:bg-neutral-600'
+                            : 'bg-neutral-100 text-neutral-900 hover:bg-white'
                             }`}
                     >
                         {isRunning ? 'Parar' : 'Iniciar'}
@@ -179,9 +241,17 @@ function App() {
                             {faces.map(face => (
                                 <li key={face.id} className="flex justify-between items-center p-4 hover:bg-neutral-800/50 transition-colors group">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-9 h-9 rounded-full bg-neutral-700 flex items-center justify-center text-sm font-medium text-neutral-300">
-                                            {face.name.charAt(0).toUpperCase()}
-                                        </div>
+                                        {face.avatar ? (
+                                            <img
+                                                src={face.avatar}
+                                                alt={face.name}
+                                                className="w-10 h-10 rounded-full object-cover border-2 border-neutral-700"
+                                            />
+                                        ) : (
+                                            <div className="w-10 h-10 rounded-full bg-neutral-700 flex items-center justify-center text-sm font-medium text-neutral-300 border-2 border-neutral-700">
+                                                {face.name.charAt(0).toUpperCase()}
+                                            </div>
+                                        )}
                                         <div>
                                             <div className="text-sm font-medium text-neutral-200">{face.name}</div>
                                             <div className="text-xs text-neutral-500 font-mono">ID: {face.id.substring(0, 6)}...</div>
@@ -227,7 +297,6 @@ function App() {
                     />
                     <canvas ref={canvasRef} className="hidden" />
 
-                    {/* Overlay Guide */}
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                         <div className="w-48 h-64 border border-neutral-500/30 rounded-full"></div>
                     </div>
@@ -246,8 +315,8 @@ function App() {
                         onClick={handleCapture}
                         disabled={isCapturing}
                         className={`px-6 rounded-lg font-medium text-sm flex items-center gap-2 min-w-[120px] justify-center transition-all ${isCapturing
-                                ? 'bg-neutral-800 text-neutral-500 cursor-not-allowed'
-                                : 'bg-neutral-100 text-neutral-900 hover:bg-white'
+                            ? 'bg-neutral-800 text-neutral-500 cursor-not-allowed'
+                            : 'bg-neutral-100 text-neutral-900 hover:bg-white'
                             }`}
                     >
                         {isCapturing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Camera className="w-4 h-4" />}
@@ -258,11 +327,106 @@ function App() {
         </div>
     );
 
+    const renderSettings = () => (
+        <div className="max-w-xl mx-auto p-8 h-screen flex flex-col font-sans text-neutral-200">
+            <header className="mb-8 border-b border-neutral-800 pb-6">
+                <button
+                    onClick={() => setView('dashboard')}
+                    className="text-neutral-500 hover:text-neutral-200 flex items-center gap-2 mb-6 text-sm font-medium transition-colors"
+                >
+                    <ArrowLeft className="w-4 h-4" />
+                    Voltar
+                </button>
+                <h1 className="text-xl font-semibold text-neutral-100">Configurações</h1>
+                <p className="text-neutral-500 text-sm mt-1">Ajuste o comportamento do bloqueio automático</p>
+            </header>
+
+            <div className="space-y-8">
+                {/* Monitor Settings */}
+                <div className="space-y-4">
+                    <h2 className="text-sm font-medium text-neutral-400 uppercase tracking-wider">Monitoramento</h2>
+
+                    <div className="bg-neutral-800/30 p-4 rounded-xl border border-neutral-800 space-y-4">
+                        <div>
+                            <label className="block text-sm font-medium text-neutral-300 mb-2">Tempo de Ausência (segundos)</label>
+                            <input
+                                type="number"
+                                value={settings.monitor.delaySeconds}
+                                onChange={e => setSettings({ ...settings, monitor: { ...settings.monitor, delaySeconds: parseInt(e.target.value) } })}
+                                className="w-full bg-neutral-900 border border-neutral-700 rounded-lg px-3 py-2 text-neutral-100 focus:border-neutral-500 outline-none"
+                            />
+                            <p className="text-xs text-neutral-500 mt-1">Quanto tempo esperar sem detectar rosto antes de bloquear.</p>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-neutral-300 mb-2">Sensibilidade (Threshold)</label>
+                            <div className="flex items-center gap-4">
+                                <input
+                                    type="range"
+                                    min="0.1"
+                                    max="0.9"
+                                    step="0.05"
+                                    value={settings.monitor.threshold}
+                                    onChange={e => setSettings({ ...settings, monitor: { ...settings.monitor, threshold: parseFloat(e.target.value) } })}
+                                    className="flex-1 accent-neutral-100"
+                                />
+                                <span className="w-12 text-right font-mono text-sm text-neutral-400">{settings.monitor.threshold}</span>
+                            </div>
+                            <p className="text-xs text-neutral-500 mt-1">Valores menores são mais rigorosos (menor chance de falso positivo).</p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Camera Settings */}
+                <div className="space-y-4">
+                    <h2 className="text-sm font-medium text-neutral-400 uppercase tracking-wider">Câmera</h2>
+                    <div className="bg-neutral-800/30 p-4 rounded-xl border border-neutral-800 grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-neutral-300 mb-2">Largura</label>
+                            <input
+                                type="number"
+                                value={settings.camera.width}
+                                onChange={e => setSettings({ ...settings, camera: { ...settings.camera, width: parseInt(e.target.value) } })}
+                                className="w-full bg-neutral-900 border border-neutral-700 rounded-lg px-3 py-2 text-neutral-100 focus:border-neutral-500 outline-none"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-neutral-300 mb-2">Altura</label>
+                            <input
+                                type="number"
+                                value={settings.camera.height}
+                                onChange={e => setSettings({ ...settings, camera: { ...settings.camera, height: parseInt(e.target.value) } })}
+                                className="w-full bg-neutral-900 border border-neutral-700 rounded-lg px-3 py-2 text-neutral-100 focus:border-neutral-500 outline-none"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <button
+                    onClick={handleSaveSettings}
+                    disabled={isSavingSettings}
+                    className={`w-full py-3 rounded-lg font-medium text-sm flex items-center justify-center gap-2 transition-all ${isSavingSettings
+                        ? 'bg-neutral-800 text-neutral-500'
+                        : 'bg-neutral-100 text-neutral-900 hover:bg-white'
+                        }`}
+                >
+                    {isSavingSettings ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                    <span>Salvar Configurações</span>
+                </button>
+
+            </div>
+        </div>
+    );
+
     return (
         <div className="min-h-screen bg-neutral-900 selection:bg-neutral-700 selection:text-neutral-200">
-            {view === 'dashboard' ? renderDashboard() : renderAddFace()}
+            {view === 'dashboard' && renderDashboard()}
+            {view === 'add' && renderAddFace()}
+            {view === 'settings' && renderSettings()}
+            {view === 'logs' && renderLogs()}
         </div>
     );
 }
 
 export default App;
+

@@ -17,6 +17,7 @@
     "@tailwindcss/postcss": "^4.1.17",
     "@tensorflow/tfjs-node": "^4.22.0",
     "@vladmandic/face-api": "^1.7.15",
+    "better-sqlite3": "^12.5.0",
     "canvas": "^3.2.0",
     "face-api.js": "^0.22.2",
     "lucide-react": "^0.556.0",

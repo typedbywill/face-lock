@@ -53,4 +53,13 @@ export class FaceApiDetector {
             distance: bestDist
         };
     }
+
+    setThreshold(newThreshold) {
+        this.threshold = newThreshold;
+    }
+
+    async reload() {
+        console.log("Recarregando modelos de reconhecimento...");
+        await this.init();
+    }
 }

@@ -7,4 +7,7 @@ contextBridge.exposeInMainWorld('api', {
     getFaces: () => ipcRenderer.invoke('get-faces'),
     removeFace: (id) => ipcRenderer.invoke('remove-face', id),
     addFace: (data) => ipcRenderer.invoke('add-face', data),
+    getSettings: () => ipcRenderer.invoke('get-settings'),
+    saveSettings: (data) => ipcRenderer.invoke('save-settings', data),
+    getLogs: () => ipcRenderer.invoke('get-logs'),
 });

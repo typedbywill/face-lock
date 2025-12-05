@@ -1,13 +1,15 @@
 import debug from "../../utils/debug.js";
 
 export class MonitorService {
-    constructor({ camera, detector, locker, tracker, config }) {
+    constructor({ camera, detector, locker, tracker, config, historyRepo }) {
         this.camera = camera;
         this.detector = detector;
         this.locker = locker;
         this.tracker = tracker;
         this.config = config;
+        this.historyRepo = historyRepo;
         this.running = false;
+        this.timer = null;
     }
 
     async start() {
@@ -64,6 +66,9 @@ export class MonitorService {
         if (this.tracker.isExpired(limit)) {
             console.log("Usuário ausente — bloqueando…");
             await this.locker.lock();
+            if (this.historyRepo) {
+                this.historyRepo.addEvent('presence_timeout');
+            }
 
             // Evita loop (bloqueia e logo em seguida detecta que bloqueou)
             // Dando um tempo extra de "activity" fake
