@@ -1,6 +1,12 @@
 # 📘 FACE-LOCK
 ### 🔒 Bloqueio automático de tela utilizando reconhecimento facial — Open Source, offline e simples
 
+### 🛠 História do Projeto
+
+O **Face-Lock** nasceu a partir de uma reflexão sobre a história do criador do site Silk Road, Ross Ulbricht (DPR), e como ele foi preso, em parte, devido ao acesso não autorizado do FBI aos seus dados pessoais. Essa reflexão me levou a pensar sobre a importância da privacidade e da segurança digital. A ideia de um sistema de bloqueio automático de tela, baseado em reconhecimento facial, surgiu como uma forma de proteger a privacidade do usuário, impedindo o acesso de terceiros quando ele se afasta do computador.
+
+A principal proposta do **Face-Lock** é oferecer uma solução de segurança **offline**, sem a necessidade de enviar imagens ou dados para a nuvem, garantindo a proteção dos dados pessoais diretamente no dispositivo. Em um mundo onde a privacidade digital é constantemente ameaçada, esta ferramenta visa oferecer uma camada extra de segurança com uma implementação simples e acessível.
+
 O **Face-Lock** é uma ferramenta open source que bloqueia automaticamente a sessão do usuário quando ele se afasta do computador.  
 Tudo ocorre **localmente**, usando modelos de visão computacional via **TensorFlow + FaceAPI**, sem enviar nenhuma imagem para a internet.
 
