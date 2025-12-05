@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow, ipcMain, Tray, Menu, nativeImage } from 'electron';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -50,6 +50,8 @@ let repository;
 let db;
 let settingsRepo;
 let historyRepo;
+let tray;
+let isQuitting = false;
 
 async function setupBackend(responseDataPath) {
     console.log("Inicializando Backend...");
@@ -107,12 +109,58 @@ function createWindow() {
         mainWindow.loadFile(path.join(__dirname, '../../dist/index.html'));
         mainWindow.setMenu(null);
     }
+
+    mainWindow.on('close', (event) => {
+        if (!isQuitting) {
+            event.preventDefault();
+            mainWindow.hide();
+            return false;
+        }
+    });
+}
+
+function createTray() {
+    const iconPath = path.join(__dirname, 'assets/icon.png');
+    const icon = nativeImage.createFromPath(iconPath);
+    tray = new Tray(icon.resize({ width: 16, height: 16 }));
+
+    const contextMenu = Menu.buildFromTemplate([
+        {
+            label: 'Abrir AutoLock',
+            click: () => {
+                if (mainWindow) {
+                    mainWindow.show();
+                    mainWindow.focus();
+                } else {
+                    createWindow();
+                }
+            }
+        },
+        { type: 'separator' },
+        {
+            label: 'Sair',
+            click: () => {
+                isQuitting = true;
+                app.quit();
+            }
+        }
+    ]);
+
+    tray.setToolTip('AutoLock - Monitoramento Facial');
+    tray.setContextMenu(contextMenu);
+
+    tray.on('click', () => {
+        if (mainWindow) {
+            mainWindow.isVisible() ? mainWindow.hide() : mainWindow.show();
+        }
+    });
 }
 
 app.whenReady().then(async () => {
     const userDataPath = app.getPath('userData');
     await setupBackend(userDataPath);
     createWindow();
+    createTray();
 
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) createWindow();
@@ -120,8 +168,12 @@ app.whenReady().then(async () => {
 });
 
 app.on('window-all-closed', () => {
+    // Mantém rodando em background (não faz nada aqui)
+    // Se fosse macOS já seria padrão, mas queremos isso pra Windows/Linux também
+});
+
+app.on('before-quit', () => {
     if (service) service.stop();
-    if (process.platform !== 'darwin') app.quit();
 });
 
 // --- IPC Handlers ---
