@@ -28,7 +28,7 @@ Tudo ocorre **localmente**, usando modelos de visão computacional via **TensorF
 
 ## 1. Clone o repositório
 
-git clone https://github.com/SEU_USUARIO/face-lock.git  
+git clone https://github.com/typedbywill/face-lock.git  
 cd face-lock
 
 ## 2. Instale as dependências
