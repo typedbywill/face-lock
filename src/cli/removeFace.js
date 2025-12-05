@@ -1,20 +1,21 @@
-// src/cli/removeFace.js
-import { DescriptorStore } from "../services/DescriptorStore.js";
-import config from "../../config/default.json" with { type: "json" };
+import { DescriptorRepository } from "../infrastructure/face-api/DescriptorRepository.js";
+import config from "../config/ConfigLoader.js";
 
-const name = process.argv[2];
-if (!name) {
-  console.log("Uso: npm run face:remove -- <nome>");
+const nameOrId = process.argv[2];
+
+if (!nameOrId) {
+  console.log("Uso: npm run face:remove -- <nome_ou_id>");
   process.exit(1);
 }
 
-const store = new DescriptorStore(config.descriptorFile);
-const user = store.findUserByName(name);
+const store = new DescriptorRepository(config.descriptorFile);
+const all = store.loadAll();
 
-if (!user) {
+const target = all.find(u => u.id === nameOrId || u.name === nameOrId);
+
+if (!target) {
   console.log("Usuário não encontrado.");
-  process.exit(1);
+} else {
+  store.removeUser(target.id);
+  console.log(`Usuário ${target.name} removido.`);
 }
-
-store.removeUser(user.id);
-console.log("Usuário removido:", name);

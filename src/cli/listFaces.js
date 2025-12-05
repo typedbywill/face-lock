@@ -1,15 +1,12 @@
-// src/cli/listFaces.js
-import { DescriptorStore } from "../services/DescriptorStore.js";
-import config from "../../config/default.json" with { type: "json" };
+import { DescriptorRepository } from "../infrastructure/face-api/DescriptorRepository.js";
+import config from "../config/ConfigLoader.js";
 
-const store = new DescriptorStore(config.descriptorFile);
-const list = store.loadAll();
+const store = new DescriptorRepository(config.descriptorFile);
+const users = store.loadAll();
 
-if (!list.length) {
-  console.log("Nenhum rosto cadastrado.");
-  process.exit(0);
+if (users.length === 0) {
+  console.log("Nenhum usuário cadastrado.");
+} else {
+  console.log("Usuários cadastrados:");
+  users.forEach(u => console.log(`- ${u.name} (ID: ${u.id})`));
 }
-
-console.table(
-  list.map(u => ({ id: u.id, name: u.name, created: u.created, updated: u.updated }))
-);

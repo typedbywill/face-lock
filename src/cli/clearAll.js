@@ -1,6 +1,6 @@
-// src/cli/clearAll.js
-import fs from "fs";
-import config from "../../config/default.json" with { type: "json" };
+import { DescriptorRepository } from "../infrastructure/face-api/DescriptorRepository.js";
+import config from "../config/ConfigLoader.js";
 
-fs.writeFileSync(config.descriptorFile, "[]");
-console.log("Todos os rostos foram removidos.");
+const store = new DescriptorRepository(config.descriptorFile);
+store.saveAll([]);
+console.log("Todos os usuários foram removidos.");

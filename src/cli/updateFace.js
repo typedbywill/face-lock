@@ -1,9 +1,8 @@
-import { Camera } from "../services/Camera.js";
-import { ModelLoader } from "../services/ModelLoader.js";
-import { DescriptorStore } from "../services/DescriptorStore.js";
-import { getFaceDescriptor } from "../utils/face.js";
-import config from "../../config/default.json" with { type: "json" };
-import cameraLib from "../utils/camera.js";
+import { NodeWebcamAdapter } from "../infrastructure/camera/NodeWebcamAdapter.js";
+import { ModelLoader } from "../infrastructure/face-api/ModelLoader.js";
+import { DescriptorRepository } from "../infrastructure/face-api/DescriptorRepository.js";
+import { getFaceDescriptor } from "../infrastructure/face-api/face-utils.js";
+import config from "../config/ConfigLoader.js";
 
 async function main() {
   const name = process.argv[2];
@@ -12,29 +11,29 @@ async function main() {
     return;
   }
 
-  const store = new DescriptorStore(config.descriptorFile);
+  const store = new DescriptorRepository(config.descriptorFile);
   const user = store.findUserByName(name);
 
   if (!user) {
-    console.log("Usuário não encontrado.");
+    console.log("Usuário não encontrado. Use o comando 'face:add' para criar um novo.");
     return;
   }
 
   const model = new ModelLoader(config.modelPath);
   await model.loadOnce();
 
-  const camera = new Camera(config, cameraLib);
-  console.log("Atualizando rosto de:", name);
+  console.log("Capturando novo rosto para:", name);
 
-  const buffer = await camera.captureBuffer();
-  const desc = await getFaceDescriptor(buffer);
+  const camera = new NodeWebcamAdapter(config.camera);
+  const buffer = await camera.capture();
+  const descriptor = await getFaceDescriptor(buffer);
 
-  if (!desc) {
+  if (!descriptor) {
     console.log("Nenhum rosto detectado.");
     return;
   }
 
-  store.updateUser(user.id, Array.from(desc));
+  store.updateUser(user.id, Array.from(descriptor));
   console.log("Rosto atualizado com sucesso!");
 }
 

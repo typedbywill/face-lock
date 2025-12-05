@@ -2,7 +2,7 @@
   "name": "face-lock",
   "type": "module",
   "scripts": {
-    "autolock": "node src/autolock.js",
+    "autolock": "node src/main/index.js",
     "face:add": "node src/cli/addFace.js",
     "face:update": "node src/cli/updateFace.js",
     "face:remove": "node src/cli/removeFace.js",

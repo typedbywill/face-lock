@@ -1,9 +1,8 @@
-import { Camera } from "../services/Camera.js";
-import { ModelLoader } from "../services/ModelLoader.js";
-import { DescriptorStore } from "../services/DescriptorStore.js";
-import { getFaceDescriptor } from "../utils/face.js";
-import config from "../../config/default.json" with { type: "json" };
-import { CameraLib } from "../utils/camera.js";
+import { NodeWebcamAdapter } from "../infrastructure/camera/NodeWebcamAdapter.js";
+import { ModelLoader } from "../infrastructure/face-api/ModelLoader.js";
+import { DescriptorRepository } from "../infrastructure/face-api/DescriptorRepository.js";
+import { getFaceDescriptor } from "../infrastructure/face-api/face-utils.js";
+import config from "../config/ConfigLoader.js";
 import crypto from "crypto";
 
 async function main() {
@@ -16,12 +15,12 @@ async function main() {
   const model = new ModelLoader(config.modelPath);
   await model.loadOnce();
 
-  const store = new DescriptorStore(config.descriptorFile);
+  const store = new DescriptorRepository(config.descriptorFile);
 
   console.log("Capturando rosto para:", name);
 
-  const camera = new Camera(config, CameraLib);
-  const buffer = await camera.captureBuffer();
+  const camera = new NodeWebcamAdapter(config.camera);
+  const buffer = await camera.capture();
   const descriptor = await getFaceDescriptor(buffer);
 
   if (!descriptor) {
